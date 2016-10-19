@@ -3,7 +3,7 @@ import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
-/**Deque
+/** Deque
  * @author VMLM
  *
  * A deque acts both as a stack and a queue. Given the memory requirements of the 
@@ -27,7 +27,7 @@ public class Deque<Item> implements Iterable<Item> {
     private int last;
     private int numitems;
     
-    /**Construct an empty deque
+    /** Construct an empty deque
      * 
      */
     public Deque() {
@@ -37,89 +37,89 @@ public class Deque<Item> implements Iterable<Item> {
         numitems = 0;
     }
     
-    /**is the deque empty?
+    /** is the deque empty?
      * @returns true if empty, false otherwise
      */
     public boolean isEmpty() {
         return numitems == 0;
     }
     
-    /**return the number of items on the deque
+    /** return the number of items on the deque
      * @return number of items
      */
     public int size() {
         return numitems;
     }
     
-    /**add the item to the front
+    /** add the item to the front
      * 
      * if first == 0, it will circle to d.length() and vice versa.
      * @param item: add to front
      */
     public void addFirst(Item item) {
         if (item == null) throw new NullPointerException();
-        d[first--] = item;
+        if (first == 0) first = d.length;
+        d[--first] = item;
         numitems++;
         if (numitems == d.length) resize(d.length*2);
-        if (first < 0) first = d.length-1;
     }
     
-    /**add the item to the end
+    /** add the item to the end
      * @param item: add to end
      */
     public void addLast(Item item) {
         if (item == null) throw new NullPointerException();
-        d[last++] = item;
+        if (last == d.length-1) last = -1;
+        d[++last] = item;
         numitems++;
         if (numitems == d.length) resize(d.length*2);
-        if (last == d.length) last = 0;
     }
     
-    /**remove and return the item from the front
+    /** remove and return the item from the front
      * @return first item in the deque
      */
     public Item removeFirst() {
         if (isEmpty()) throw new NoSuchElementException();
-        if (first == d.length-1) first = -1;
-        Item item = d[++first];
-        d[first] = null;
+        Item item = d[first];
+        d[first++] = null;
         numitems--;
-        if (numitems == d.length/4) resize(d.length/2);
+        if (first == d.length) first = 0;
+        if (numitems != 0 && numitems == d.length/4) resize(d.length/2);
         return item;
     }
     
-    /**remove and return the item from the end
+    /** remove and return the item from the end
      * @return last item in the deque
      */
     public Item removeLast() {
         if (isEmpty()) throw new NoSuchElementException();
-        if (last == 0) last = d.length;
-        Item item = d[--last];
-        d[last] = null;
+        Item item = d[last];
+        d[last--] = null;
         numitems--;
-        if (numitems == d.length/4) resize(d.length/2);
+        if (last == -1) last = d.length-1;
+        if (numitems != 0 && numitems == d.length/4) resize(d.length/2);
         return item;
     }
     
     private void resize(int capacity) {
         Item[] newdeque = (Item[]) new Object[capacity];
-        int newfirst = numitems/2-1;
-        for (int i = 1; i <= numitems; i++) 
+        int newfirst = capacity/2 - 1;
+        for (int i = 0; i < numitems; i++) 
             newdeque[newfirst + i] = d[(first+i) % d.length];
         first = newfirst;
-        last = newfirst + numitems + 1;
+        last = newfirst + numitems - 1;
         d = newdeque;
     }
     
     private class ArrayIterator implements Iterator<Item> {
         private int current = first;
         @Override
-        public boolean hasNext() { return d[(current+1) % d.length] != null; }
+        public boolean hasNext() { return d[(current) % d.length] != null; }
 
         @Override
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-            return d[(++current) % d.length]; 
+            return d[(current++) % d.length]; 
         }
 
         @Override
@@ -141,10 +141,16 @@ public class Deque<Item> implements Iterable<Item> {
         int i = 0;
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
-            if (s.equals("-")) StdOut.print(deque.removeLast());
-            else if (s.equals("+")) StdOut.print(deque.removeFirst());
+            if (s.equals("-")) StdOut.println(deque.removeLast());
+            else if (s.equals("+")) StdOut.println(deque.removeFirst());
             else if (s.equals("/")) deque.addFirst(++i);
             else if (s.equals("*")) deque.addLast(++i);
         }
+        
+        for (Iterator<Integer> iter = deque.iterator(); iter.hasNext();) {
+            int item = iter.next();
+            StdOut.print(item + " ");
+        }
+        StdOut.println();
     }
 }

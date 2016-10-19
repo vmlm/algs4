@@ -12,7 +12,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int last;
     private int numitems;
 
-    /**construct an empty randomized queue
+    /** construct an empty randomized queue
      * 
      */
     public RandomizedQueue() { 
@@ -22,17 +22,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         numitems = 0;
     }
     
-    /**is the queue empty?
+    /** is the queue empty?
      * @return true if empty, false otherwise
      */
     public boolean isEmpty() { return numitems == 0; }
     
-    /**return the number of items on the queue
+    /** return the number of items on the queue
      * @return numitems
      */
     public int size() { return numitems; }
     
-    /**add the item
+    /** add the item
      * @param item: add item to back of queue.
      */
     public void enqueue(Item item) { 
@@ -53,7 +53,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         queue[k] = queue[first];
         queue[first++] = null;
         numitems--;
-        if (numitems == queue.length/4) resize(queue.length/2); 
+        if (numitems != 0 && numitems == queue.length/4) resize(queue.length/2); 
         if (first == queue.length) first = 0; 
         return item;
     }
@@ -76,16 +76,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         
     }
     
-    private Item[] copyItems() {
-        Item[] copy = (Item[]) new Object[numitems];
-        for (int i = numitems; i < 0; i--) {
-            copy[i] = queue[(first+i) % queue.length];
+    private int [] randomIndexArray() {
+        int k;
+        int[] orderedarray = new int[numitems];
+        int[] shuffledarray = new int[numitems];
+        for (int i = 0; i < numitems; i++) orderedarray[i] = i;
+        for (int i = numitems; i > 0; i--) {
+            k = StdRandom.uniform(i);
+            shuffledarray[numitems-i] = orderedarray[k];
+            orderedarray[k] = orderedarray[i-1];
         }
-        return copy; 
+        return shuffledarray; 
     }
     
     private class ArrayIterator implements Iterator<Item> {
-        private Item[] shuffled = copyItems();
+        private int[] shuffled = randomIndexArray();
         private int unsampled = shuffled.length;
         @Override
         public boolean hasNext() { return unsampled != 0; }
@@ -93,10 +98,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         @Override
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-            int k = StdRandom.uniform(unsampled);
-            Item item = shuffled[k];
-            shuffled[k] = shuffled[--unsampled];
-            shuffled[unsampled] = null;
+            
+            Item item = queue[(first+shuffled[--unsampled]) % queue.length];
             return item; 
         }
 
@@ -119,6 +122,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (s.equals("-")) StdOut.print(queue.dequeue());
             else queue.enqueue(s);
         }
+        
+        for (Iterator<String> iter = queue.iterator(); iter.hasNext();) {
+            String item = iter.next();
+            StdOut.print(item + " ");
+        }
+        StdOut.println();
     }
 
 }
