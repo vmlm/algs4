@@ -1,5 +1,5 @@
 import java.util.Iterator;
-
+import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -57,6 +57,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @param item: add to front
      */
     public void addFirst(Item item) {
+        if (item == null) throw new NullPointerException();
         d[first--] = item;
         numitems++;
         if (numitems == d.length) resize(d.length*2);
@@ -67,6 +68,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @param item: add to end
      */
     public void addLast(Item item) {
+        if (item == null) throw new NullPointerException();
         d[last++] = item;
         numitems++;
         if (numitems == d.length) resize(d.length*2);
@@ -77,6 +79,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return first item in the deque
      */
     public Item removeFirst() {
+        if (isEmpty()) throw new NoSuchElementException();
         if (first == d.length-1) first = -1;
         Item item = d[++first];
         d[first] = null;
@@ -89,6 +92,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return last item in the deque
      */
     public Item removeLast() {
+        if (numitems == 0) throw new NoSuchElementException();
         if (last == 0) last = d.length;
         Item item = d[--last];
         d[last] = null;
@@ -113,7 +117,10 @@ public class Deque<Item> implements Iterable<Item> {
         public boolean hasNext() { return d[(current+1) % d.length] != null; }
 
         @Override
-        public Item next() { return d[(++current) % d.length]; }
+        public Item next() {
+            if (!hasNext()) throw new NoSuchElementException();
+            return d[(++current) % d.length]; 
+        }
 
         @Override
         public void remove() { throw new UnsupportedOperationException(); }
@@ -140,7 +147,5 @@ public class Deque<Item> implements Iterable<Item> {
             else if (s.equals("/")) deque.addFirst(++i);
             else if (s.equals("*")) deque.addLast(++i);
         }
-
     }
-
 }
