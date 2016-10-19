@@ -92,7 +92,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @return last item in the deque
      */
     public Item removeLast() {
-        if (numitems == 0) throw new NoSuchElementException();
+        if (isEmpty()) throw new NoSuchElementException();
         if (last == 0) last = d.length;
         Item item = d[--last];
         d[last] = null;
@@ -124,7 +124,6 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public void remove() { throw new UnsupportedOperationException(); }
-        
     }
     
     /* (non-Javadoc) return an iterator over items in order from front to end
