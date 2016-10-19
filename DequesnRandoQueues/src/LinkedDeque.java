@@ -3,13 +3,13 @@ import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
-public class Deque<Item> implements Iterable<Item> {
+public class LinkedDeque<Item> implements Iterable<Item> {
     
     private Node first;
     private Node last;
     private int numitems;
     
-    public Deque() {
+    public LinkedDeque() {
         first = null;
         last = null;
         numitems = 0;
@@ -120,7 +120,6 @@ public class Deque<Item> implements Iterable<Item> {
         public boolean hasNext() { return current != null; }
         
         public Item next() {
-            if (!hasNext()) throw new NoSuchElementException();
             Item item = current.item;
             current = current.next;
             return item;
@@ -140,7 +139,7 @@ public class Deque<Item> implements Iterable<Item> {
      * @param args arguments
      */
     public static void main(String[] args) {
-        Deque<Integer> deque = new Deque<Integer>();
+        LinkedDeque<Integer> deque = new LinkedDeque<Integer>();
         int i = 0;
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();

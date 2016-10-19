@@ -3,22 +3,38 @@ import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
-public class Deque<Item> implements Iterable<Item> {
+/** Deque
+ * @author VMLM
+ *
+ * A deque acts both as a stack and a queue. Given the memory requirements of the 
+ * assignment, it's very probable that only an array implementation will be 
+ * suitable. Therefore, this will be the first structure we implement.
+ * 
+ * We will use a circular array, indicating the beginning and end of the deque.
+ * AddFirst will decrease the array index pointing toward the first element.
+ * AddLast will increase the array index pointing toward the last element.
+ * 
+ * The deque will also resize, to twice its size whenever the number of elements
+ * equals the current capacity of the array, or to one fourth its size whenever
+ * the number of elements equals one fourth the current capacity of the array.
+ *  
+ * @param <Item>
+ */
+public class ArrayDeque<Item> implements Iterable<Item> {
     
-    private Node first;
-    private Node last;
+    private Item[] d;
+    private int first;
+    private int last;
     private int numitems;
     
-    public Deque() {
-        first = null;
-        last = null;
+    /** Construct an empty deque
+     * 
+     */
+    public ArrayDeque() {
+        d = (Item[]) new Object[2];
+        first = 0;
+        last = 1;
         numitems = 0;
-    }
-    
-    private class Node {
-        private Node next;
-        private Node previous;
-        private Item item;
     }
     
     /** is the deque empty?
@@ -35,13 +51,6 @@ public class Deque<Item> implements Iterable<Item> {
         return numitems;
     }
     
-    private void addInitialNode(Node newnode) {
-        first = newnode;
-        last = newnode;
-        newnode.next = null;
-        newnode.previous = null;
-    }
-    
     /** add the item to the front
      * 
      * if first == 0, it will circle to d.length() and vice versa.
@@ -49,17 +58,10 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public void addFirst(Item item) {
         if (item == null) throw new NullPointerException();
-        Node newnode = new Node();
-        newnode.item = item;
-        if (first == null && last == null) {
-            addInitialNode(newnode);
-        } else {
-            newnode.next = first;
-            first.previous = newnode;
-            newnode.previous = null;
-            first = newnode;
-        }
+        if (first == 0) first = d.length;
+        d[--first] = item;
         numitems++;
+        if (numitems == d.length) resize(d.length*2);
     }
     
     /** add the item to the end
@@ -67,17 +69,10 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public void addLast(Item item) {
         if (item == null) throw new NullPointerException();
-        Node newnode = new Node();
-        newnode.item = item;
-        if (first == null && last == null) {
-            addInitialNode(newnode);
-        } else {
-            newnode.previous = last;
-            last.next = newnode;
-            newnode.next = null;
-            last = newnode;
-        }
+        if (last == d.length-1) last = -1;
+        d[++last] = item;
         numitems++;
+        if (numitems == d.length) resize(d.length*2);
     }
     
     /** remove and return the item from the front
@@ -85,15 +80,11 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public Item removeFirst() {
         if (isEmpty()) throw new NoSuchElementException();
-        Item item = first.item;
-        if (first.next != null) {
-            first = first.next;
-            first.previous = null;
-        } else {
-            first = null;
-            last = null;
-        }
+        Item item = d[first];
+        d[first++] = null;
         numitems--;
+        if (first == d.length) first = 0;
+        if (numitems != 0 && numitems == d.length/4) resize(d.length/2);
         return item;
     }
     
@@ -102,30 +93,36 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public Item removeLast() {
         if (isEmpty()) throw new NoSuchElementException();
-        Item item = last.item;
-        if (last.previous != null) {
-            last = last.previous;
-            last.next = null;
-        } else {
-            first = null;
-            last = null;
-        }
+        Item item = d[last];
+        d[last--] = null;
         numitems--;
+        if (last == -1) last = d.length-1;
+        if (numitems != 0 && numitems == d.length/4) resize(d.length/2);
         return item;
     }
     
-    private class LinkedIterator implements Iterator<Item> {
-        private Node current = first;
-        
-        public boolean hasNext() { return current != null; }
-        
+    private void resize(int capacity) {
+        Item[] newdeque = (Item[]) new Object[capacity];
+        int newfirst = capacity/2 - 1;
+        for (int i = 0; i < numitems; i++) 
+            newdeque[newfirst + i] = d[(first+i) % d.length];
+        first = newfirst;
+        last = newfirst + numitems - 1;
+        d = newdeque;
+    }
+    
+    private class ArrayIterator implements Iterator<Item> {
+        private int current = first;
+        @Override
+        public boolean hasNext() { return d[(current) % d.length] != null; }
+
+        @Override
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-            Item item = current.item;
-            current = current.next;
-            return item;
+            return d[(current++) % d.length]; 
         }
-        
+
+        @Override
         public void remove() { throw new UnsupportedOperationException(); }
     }
     
@@ -133,14 +130,14 @@ public class Deque<Item> implements Iterable<Item> {
      * @see java.lang.Iterable#iterator()
      */
     public Iterator<Item> iterator() {
-        return new LinkedIterator();
+        return new ArrayIterator();
     }
     
     /** unit testing
      * @param args arguments
      */
     public static void main(String[] args) {
-        Deque<Integer> deque = new Deque<Integer>();
+        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
         int i = 0;
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
