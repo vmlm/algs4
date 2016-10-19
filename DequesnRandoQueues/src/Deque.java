@@ -129,7 +129,7 @@ public class Deque<Item> implements Iterable<Item> {
     /* (non-Javadoc) return an iterator over items in order from front to end
      * @see java.lang.Iterable#iterator()
      */
-    public ArrayIterator iterator() {
+    public Iterator<Item> iterator() {
         return new ArrayIterator();
     }
     

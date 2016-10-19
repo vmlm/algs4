@@ -107,7 +107,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     /* (non-Javadoc) return an independent iterator over items in random order
      * @see java.lang.Iterable#iterator()
      */
-    public ArrayIterator iterator() { return new ArrayIterator(); }
+    public Iterator<Item> iterator() { return new ArrayIterator(); }
     
     /**unit testing
      * @param args
