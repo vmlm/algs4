@@ -5,8 +5,8 @@ public abstract class SortAlgorithm {
         return v.compareTo(w) < 0;
     }
     
-    protected static void exch(Comparable[] a, int v, int w) {
-        Comparable swap = a[v];
+    protected static <T> void exch(T[] a, int v, int w) {
+        T swap = a[v];
         a[v] = a[w];
         a[w] = swap;
     } 
