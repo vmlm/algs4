@@ -80,11 +80,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int k, val;
         int[] shuffledarray = new int[numitems];
         for (int i = 0; i < numitems; i++) shuffledarray[i] = i;
-        for (int i = numitems; i > 0; i--) {
-            k = StdRandom.uniform(i);
+        for (int i = 1; i < numitems; i--) {
+            k = StdRandom.uniform(i+1);
             val = shuffledarray[k]; 
-            shuffledarray[k] = shuffledarray[i-1];
-            shuffledarray[i-1] = val;
+            shuffledarray[k] = shuffledarray[i];
+            shuffledarray[i] = val;
         }
         return shuffledarray; 
     }
