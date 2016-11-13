@@ -20,6 +20,7 @@ public abstract class SortAlgorithm {
         a[w] = swap;
     }
     
+    @SuppressWarnings("rawtypes")
     protected static void insertionSort(Object[] a, int lo, int hi, 
             Comparator comparator) {
         for (int i = lo; i < hi; i++)
@@ -27,6 +28,7 @@ public abstract class SortAlgorithm {
                 exch(a, i, j);
     }
     
+    @SuppressWarnings("rawtypes")
     protected static boolean isSorted(Object[] a, int lo, int hi, 
             Comparator comparator) {
         if (lo == hi) return true;
@@ -37,7 +39,6 @@ public abstract class SortAlgorithm {
     
     public static void main(String[] args) {
         int n = 10000;
-        String type = "quicksort";
         
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++) {
