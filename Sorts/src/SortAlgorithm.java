@@ -20,8 +20,25 @@ public abstract class SortAlgorithm {
         a[w] = swap;
     }
     
+    protected static void insertionSort(Object[] a, int lo, int hi, 
+            Comparator comparator) {
+        for (int i = lo; i < hi; i++)
+            for (int j = i + 1; j > lo && less(a[j], a[j-1], comparator); j--)
+                exch(a, i, j);
+    }
+    
+    protected static boolean isSorted(Object[] a, int lo, int hi, 
+            Comparator comparator) {
+        if (lo == hi) return true;
+        for (int k = lo+1; k <= hi; k++)
+            if (less(a[k], a[k-1], comparator)) return false;
+        return true;
+    }
+    
     public static void main(String[] args) {
-        int n = 100;
+        int n = 10000;
+        String type = "quicksort";
+        
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++) {
             a[i] = StdRandom.uniform(n);
@@ -29,7 +46,7 @@ public abstract class SortAlgorithm {
         
         Comparator<Integer> comparator = new Comparator<Integer>() {
             public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
+                return Integer.compare(o1, o2);
             }
         };
         
