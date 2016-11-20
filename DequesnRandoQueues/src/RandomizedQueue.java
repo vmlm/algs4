@@ -15,6 +15,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     /** construct an empty randomized queue
      * 
      */
+    @SuppressWarnings("unchecked")
     public RandomizedQueue() { 
         queue = (Item[]) new Object[2];
         first = 0;
@@ -66,6 +67,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return queue[(first+StdRandom.uniform(numitems)) % queue.length]; 
     }
     
+    @SuppressWarnings("unchecked")
     private void resize(int capacity) {
         Item[] newqueue = (Item[]) new Object[capacity];
         for (int i = 0; i < numitems; i++) 
